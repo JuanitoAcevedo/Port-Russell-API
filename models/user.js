@@ -1,3 +1,4 @@
+console.log(">>> USER MODEL UTILISÉ PAR NODE :", __filename);
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const Schema = mongoose.Schema;
@@ -22,10 +23,11 @@ const UserSchema = new Schema({
   }
 }, { timestamps: true });
 
-UserSchema.pre('save', function(next) {
-  if (!this.isModified('password') || !this.password) return next();
+UserSchema.pre('save', function () {
+  if (!this.isModified('password') || !this.password) {
+    return;
+  }
   this.password = bcrypt.hashSync(this.password, 10);
-  next();
 });
 
 module.exports = mongoose.model('User', UserSchema);

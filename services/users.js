@@ -27,10 +27,15 @@ exports.getByEmail = async (req, res) => {
 
 // POST /users
 exports.add = async (req, res) => {
+  console.log(">>> SERVICE.ADD EXÉCUTÉ !");
   try {
     const user = await User.create(req.body);
+
+    console.log(">>> RÉPONSE ENVOYÉE PAR LE SERVICE :", user);
+
     return res.status(201).json(user);
   } catch (err) {
+    console.log(">>> ERREUR DANS SERVICE :", err);
     return res.status(400).json({ error: err.message });
   }
 };

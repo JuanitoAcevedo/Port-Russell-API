@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const service = require('../services/catways');
 
-// routes ici
+router.get('/', service.getAll);
 
 module.exports = router;
