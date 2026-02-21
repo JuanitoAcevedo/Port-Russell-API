@@ -1,6 +1,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const catwaysRouter = require('./routes/catways');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -35,8 +36,9 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/catways', catwaysRouter);
+app.use('/', indexRouter);
 
 // 404
 app.use((req, res, next) => {

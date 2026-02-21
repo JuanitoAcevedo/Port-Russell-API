@@ -3,6 +3,10 @@ const router = express.Router();
 const service = require('../services/users');
 const auth = require('../middleware/auth');
 
+router.post('/register', (req, res, next) => {
+  return service.add(req, res, next);
+});
+
 router.post('/login', (req, res, next) => {
   return service.login(req, res, next);
 });
