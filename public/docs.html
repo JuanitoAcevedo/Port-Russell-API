@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Documentation API – Port Russell</title>
+  <link rel="stylesheet" href="/docs.css">
+</head>
+<body>
+
+  <h1>📘 Documentation de l’API – Port Russell</h1>
+  <p>Bienvenue dans la documentation officielle de l’API du port de plaisance Port Russell.</p>
+  <p><a href="/">⬅ Retour à l’accueil</a></p>
+
+  <!-- AUTH -->
+  <div class="section">
+    <h2>🔐 Authentification</h2>
+
+    <h3>POST /users/register</h3>
+    <p>Créer un utilisateur.</p>
+
+    <h3>POST /users/login</h3>
+    <p>Connexion, renvoie un token JWT.</p>
+    <pre>{
+  "email": "test@test.com",
+  "password": "123456"
+}</pre>
+  </div>
+
+  <!-- USERS -->
+  <div class="section">
+    <h2>👤 Users</h2>
+
+    <h3>GET /users</h3>
+    <p>Liste des utilisateurs (admin).</p>
+
+    <h3>GET /users/me</h3>
+    <p>Retourne le profil du user connecté.</p>
+
+    <h3>DELETE /users/:id</h3>
+    <p>Supprime un utilisateur.</p>
+  </div>
+
+  <!-- CATWAYS -->
+  <div class="section">
+    <h2>⚓ Catways</h2>
+
+    <h3>GET /catways</h3>
+    <p>Liste des catways.</p>
+
+    <h3>GET /catways/:id</h3>
+    <p>Détails d’un catway.</p>
+
+    <h3>POST /catways</h3>
+    <p>Créer un catway.</p>
+
+    <h3>PUT /catways/:id</h3>
+    <p>Modifier un catway.</p>
+
+    <h3>DELETE /catways/:id</h3>
+    <p>Supprimer un catway.</p>
+  </div>
+
+  <!-- RESERVATIONS -->
+  <div class="section">
+    <h2>📅 Reservations</h2>
+
+    <h3>GET /reservations</h3>
+    <p>Liste générale (pagination, tri, filtres).</p>
+
+    <h3>GET /reservations/my-reservations</h3>
+    <p>Réservations du user connecté.</p>
+
+    <h3>GET /reservations/catway/:catwayId</h3>
+    <p>Réservations d’un catway.</p>
+
+    <h3>GET /reservations/period?from=YYYY-MM-DD&to=YYYY-MM-DD</h3>
+    <p>Réservations dans une période.</p>
+
+    <h3>GET /reservations/active</h3>
+    <p>Réservations actives aujourd’hui.</p>
+
+    <h3>GET /reservations/upcoming</h3>
+    <p>Réservations futures.</p>
+
+    <h3>GET /reservations/past</h3>
+    <p>Réservations passées.</p>
+
+    <h3>GET /reservations/stats</h3>
+    <p>Statistiques globales.</p>
+
+    <h3>POST /reservations</h3>
+    <p>Créer une réservation.</p>
+
+    <h3>PUT /reservations/:id</h3>
+    <p>Modifier une réservation.</p>
+
+    <h3>DELETE /reservations/:id</h3>
+    <p>Supprimer une réservation.</p>
+  </div>
+
+  <!-- AUTH HEADER -->
+  <div class="section">
+    <h2>🔑 Header d’authentification</h2>
+    <p>Toutes les routes protégées nécessitent :</p>
+    <pre>Authorization: Bearer VOTRE_TOKEN</pre>
+  </div>
+
+</body>
+</html>

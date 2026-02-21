@@ -2,6 +2,8 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const catwaysRouter = require('./routes/catways');
+const reservationsRouter = require("./routes/reservations");
+
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -27,6 +29,8 @@ app.use((req, res, next) => {
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+app.use(express.static("public"));
+
 // Supprimer le slash final
 app.use((req, res, next) => {
   if (req.url.endsWith('/') && req.url.length > 1) {
@@ -38,6 +42,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/users', usersRouter);
 app.use('/catways', catwaysRouter);
+app.use("/reservations", reservationsRouter);
 app.use('/', indexRouter);
 
 // 404

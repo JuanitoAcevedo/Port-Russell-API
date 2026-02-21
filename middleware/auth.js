@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/users');
 const SECRET = "PORT_RUSSELL_SECRET";
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
   const header = req.headers.authorization;
 
   if (!header || !header.startsWith("Bearer ")) {
@@ -12,8 +13,17 @@ module.exports = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, SECRET);
-    req.user = decoded; 
+
+    
+    const user = await User.findOne({ email: decoded.email });
+
+    if (!user) {
+      return res.status(401).json({ message: "user_not_found" });
+    }
+
+    req.user = user; 
     next();
+
   } catch (err) {
     return res.status(401).json({ message: "invalid_token" });
   }
