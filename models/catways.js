@@ -14,7 +14,7 @@ const CatwaySchema = new Schema({
   },
   catwayState: {
     type: String,
-    enum: ['OK', 'maintenance', 'occupied', 'unavailable'],
+    enum: ['OK', 'maintenance', 'occupied', 'unavailable', 'bon état'],
     default: 'OK',
     trim: true
   }

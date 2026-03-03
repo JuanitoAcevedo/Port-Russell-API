@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard – Port Russell</title>
+  <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body>
+    <nav class="navbar">
+        <h2>Port Russell – Dashboard</h2>
+        <ul>
+            <li><a href="#" onclick="showSection('catways')">Catways</a></li>
+            <li><a href="#" onclick="showSection('reservations')">Réservations</a></li>
+            <li><a href="#" onclick="showSection('profile')">Profil</a></li>
+            <li><a href="#" onclick="logout()">Déconnexion</a></li>
+        </ul>
+    </nav>
+    <div id="content">
+       <section id="catways" class="section hidden">
+            <h3>Liste des Catways</h3>
+
+            <button onclick="showAddCatwayForm()">➕ Ajouter un Catway</button>
+
+            <div id="add-catway-form" class="hidden">
+                <h4>Nouveau Catway</h4>
+                <input id="catway-number" type="number" placeholder="Numéro">
+                <select id="catway-type">
+                    <option value="long">long</option>
+                    <option value="short">short</option>
+                </select>
+                <button onclick="createCatway()">Créer</button>
+            </div>
+            <div id="edit-catway-form" class="hidden">
+                <h4>Modifier Catway</h4>
+
+                <input id="edit-catway-number" type="number" placeholder="Numéro">
+
+                <select id="edit-catway-type">
+                    <option value="long">long</option>
+                    <option value="short">short</option>
+                </select>
+
+                <select id="edit-catway-state">
+                    <option value="OK">OK</option>
+                    <option value="maintenance">maintenance</option>
+                    <option value="occupied">occupied</option>
+                    <option value="unavailable">unavailable</option>
+                    <option value="bon état">bon état</option>
+                </select>
+
+                <button onclick="updateCatway()">Enregistrer</button>
+            </div>
+            <div id="catways-list"></div>
+        </section>
+
+        <section id="reservations" class="section hidden">
+            <h3>Liste des Réservations</h3>
+            <div id="reservations-list"></div>
+        </section>
+
+        <section id="profile" class="section hidden">
+            <h3>Mon Profil</h3>
+            <div id="profile-info"></div>
+        </section>
+    </div>
+    <script src="/dashboard.js"></script>
+</body>
+</html>

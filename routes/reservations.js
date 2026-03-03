@@ -3,6 +3,7 @@ const router = express.Router();
 const Reservation = require("../models/reservations");
 const Catway = require("../models/catways");
 const auth = require("../middleware/auth");
+const ReservationService = require('../services/reservations');
 
 // GET /reservations 
 router.get("/", auth, async (req, res) => {
@@ -36,12 +37,11 @@ router.get("/", auth, async (req, res) => {
       filter.endDate = { $lte: new Date(req.query.to) };
     }
 
-    const sort = req.query.sort || "startDate"; // tri par défaut
+    const sort = req.query.sort || "startDate";
     const reservations = await Reservation.find(filter)
       .skip(skip)
       .limit(limit)
       .sort(sort)
-      .populate("user", "email username")
       .populate("catway", "name");
 
     const total = await Reservation.countDocuments(filter);
@@ -59,7 +59,7 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
-// GET /reservations/vérifier disponibilité d’un catway
+// GET /reservations/
 router.get("/check", auth, async (req, res) => {
   try {
     const { catway, startDate, endDate } = req.query;

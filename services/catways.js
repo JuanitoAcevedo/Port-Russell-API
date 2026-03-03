@@ -66,15 +66,13 @@ exports.add = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    const number = parseInt(req.params.number, 10);
-
-    if (isNaN(number)) {
-      return res.status(400).json({ message: "invalid_catway_number" });
-    }
-
-    const updated = await Catway.findOneAndUpdate(
-      { catwayNumber: number },
-      req.body,
+    const updated = await Catway.findByIdAndUpdate(
+      req.params.id,
+      {
+        catwayNumber: req.body.catwayNumber,
+        catwayType: req.body.catwayType,
+        catwayState: req.body.catwayState
+      },
       { new: true, runValidators: true }
     );
 
