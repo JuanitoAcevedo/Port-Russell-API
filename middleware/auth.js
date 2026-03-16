@@ -1,30 +1,14 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/users');
-const SECRET = "PORT_RUSSELL_SECRET";
+const tokens = new Map(); // email → token
 
-module.exports = async (req, res, next) => {
-  const header = req.headers.authorization;
+function auth(req, res, next) {
+  const token = req.headers.authorization?.replace("Bearer ", "");
+  if (!token) return res.status(401).json({ error: "Token manquant" });
 
-  if (!header || !header.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "missing_or_invalid_token" });
-  }
+  const email = [...tokens.entries()].find(([_, t]) => t === token)?.[0];
+  if (!email) return res.status(401).json({ error: "Token invalide" });
 
-  const token = header.split(" ")[1];
+  req.userEmail = email;
+  next();
+}
 
-  try {
-    const decoded = jwt.verify(token, SECRET);
-
-    
-    const user = await User.findOne({ email: decoded.email });
-
-    if (!user) {
-      return res.status(401).json({ message: "user_not_found" });
-    }
-
-    req.user = user; 
-    next();
-
-  } catch (err) {
-    return res.status(401).json({ message: "invalid_token" });
-  }
-};
+module.exports = { auth, tokens };

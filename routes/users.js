@@ -1,43 +1,54 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const service = require('../services/users');
-const auth = require('../middleware/auth');
+const User = require("../models/users");
+const { auth } = require("../middleware/auth");
 
-router.post('/register', (req, res, next) => {
-  return service.add(req, res, next);
+// GET all users
+router.get("/", auth, async (req, res) => {
+  const users = await User.find({}, "-password");
+  res.json(users);
 });
 
-router.post('/login', (req, res, next) => {
-  return service.login(req, res, next);
+// GET user by email
+router.get("/:email", auth, async (req, res) => {
+  const user = await User.findOne({ email: req.params.email }, "-password");
+  if (!user) return res.status(404).json({ error: "User not found" });
+  res.json(user);
 });
 
-router.get('/logout', (req, res, next) => {
-  return service.logout(req, res, next);
+// CREATE user
+router.post("/", auth, async (req, res) => {
+  try {
+    const newUser = new User(req.body);
+    await newUser.save();
+    res.json(newUser);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
-router.post('/', (req, res, next) => {
-  return service.add(req, res, next);
+// UPDATE user
+router.put("/:email", auth, async (req, res) => {
+  const updated = await User.findOneAndUpdate(
+    { email: req.params.email },
+    req.body,
+    { new: true }
+  );
+  if (!updated) return res.status(404).json({ error: "User not found" });
+  res.json(updated);
 });
 
-router.get('/me', auth, (req, res) => {
-    console.log(">>> ROUTE /me APPELÉE !");
-  return res.status(200).json({ user: req.user });
+// DELETE user
+router.delete("/:email", auth, async (req, res) => {
+  const deleted = await User.findOneAndDelete({ email: req.params.email });
+  if (!deleted) return res.status(404).json({ error: "User not found" });
+  res.json({ message: "User deleted" });
 });
 
-router.get('/', auth, (req, res, next) => {
-  return service.getAll(req, res, next);
-});
-
-router.get('/:email', auth, (req, res, next) => {
-  return service.getByEmail(req, res, next);
-});
-
-router.put('/:email', auth, (req, res, next) => {
-  return service.update(req, res, next);
-});
-
-router.delete('/:email', auth, (req, res, next) => {
-  return service.delete(req, res, next);
+// GET connected user
+router.get("/me", auth, async (req, res) => {
+  const user = await User.findOne({ email: req.userEmail }, "-password");
+  res.json(user);
 });
 
 module.exports = router;

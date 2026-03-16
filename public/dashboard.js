@@ -1,186 +1,192 @@
-const token = localStorage.getItem("token");
-if (!token) {
-  window.location.href = "/";
+
+// Gestion des sections
+
+function showSection(sectionId) {
+    document.querySelectorAll(".section").forEach(sec => sec.classList.add("hidden"));
+    document.getElementById(sectionId).classList.remove("hidden");
+
+    if (sectionId === "catways") loadCatways();
+    if (sectionId === "reservations") loadReservations();
+    if (sectionId === "profile") loadProfile();
 }
 
-function showSection(name) {
-  document.querySelectorAll(".section").forEach(sec => sec.classList.add("hidden"));
-  document.getElementById(name).classList.remove("hidden");
-}
+
+// Déconnexion
 
 function logout() {
-  localStorage.removeItem("token");
-  window.location.href = "/";
+    localStorage.removeItem("token");
+    window.location.href = "/login.html";
 }
 
-function showSection(name) {
-  document.querySelectorAll(".section").forEach(sec => sec.classList.add("hidden"));
-  document.getElementById(name).classList.remove("hidden");
 
-  if (name === "catways") loadCatways();
-  if (name === "reservations") loadReservations();
+// PROFIL
+
+async function loadProfile() {
+    const res = await fetch("/users/me", {
+        headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+    });
+    const user = await res.json();
+
+    document.getElementById("profile-info").innerHTML = `
+        <p><strong>Nom :</strong> ${user.name}</p>
+        <p><strong>Email :</strong> ${user.email}</p>
+    `;
+}
+
+
+// CATWAYS
+
+function showAddCatwayForm() {
+    document.getElementById("add-catway-form").classList.toggle("hidden");
 }
 
 async function loadCatways() {
-  const res = await fetch("/catways", {
-    headers: {
-      "Authorization": "Bearer " + token
-    }
-  });
+    const res = await fetch("/catways");
+    const catways = await res.json();
 
-  const data = await res.json();
+    const container = document.getElementById("catways-list");
+    container.innerHTML = "";
 
-  const container = document.getElementById("catways-list");
-  container.innerHTML = "";
-
-  if (!Array.isArray(data)) {
-    container.innerHTML = "<p>Erreur lors du chargement des catways.</p>";
-    return;
-  }
-
-  data.forEach(catway => {
-    const div = document.createElement("div");
-    div.className = "catway-card";
-    div.innerHTML = `
-      <h4>Catway #${catway.catwayNumber}</h4>
-      <p><strong>Type :</strong> ${catway.catwayType}</p>
-      <p><strong>État :</strong> ${catway.catwayState}</p>
-
-     <button onclick='editCatway(
-      "${catway._id}",
-      ${catway.catwayNumber},
-      "${catway.catwayType}",
-      "${catway.catwayState}"
-      )'>Modifier</button>
-      <button onclick="deleteCatway('${catway._id}')">Supprimer</button>
-    `;
-    container.appendChild(div);
-  });
-}
-
-function showAddCatwayForm() {
-  document.getElementById("add-catway-form").classList.toggle("hidden");
+    catways.forEach(c => {
+        const div = document.createElement("div");
+        div.innerHTML = `
+            <strong>Catway ${c.catwayNumber}</strong><br>
+            Type : ${c.catwayType}<br>
+            État : ${c.catwayState}<br>
+            <button onclick="editCatway(${c.catwayNumber})">Modifier</button>
+            <hr>
+        `;
+        container.appendChild(div);
+    });
 }
 
 async function createCatway() {
-  const catwayNumber = document.getElementById("catway-number").value;
-  const catwayType = document.getElementById("catway-type").value;
+    const newCatway = {
+        catwayNumber: document.getElementById("catway-number").value,
+        catwayType: document.getElementById("catway-type").value,
+        catwayState: "OK"
+    };
 
-  const res = await fetch("/catways", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + token
-    },
-    body: JSON.stringify({
-      catwayNumber,
-      catwayType,
-      catwayState: "OK"
-    })
-  });
+    await fetch("/catways", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        body: JSON.stringify(newCatway)
+    });
 
-  const data = await res.json();
-
-  if (res.ok) {
-    alert("Catway créé !");
     loadCatways();
-    showAddCatwayForm();
-  } else {
-    alert("Erreur : " + data.error);
-  }
 }
 
-let editingCatwayId = null;
+async function editCatway(number) {
+    const res = await fetch(`/catways/${number}`);
+    const catway = await res.json();
 
-function editCatway(id, number, type, state) {
-  editingCatwayId = id;
+    document.getElementById("edit-catway-number").value = catway.catwayNumber;
+    document.getElementById("edit-catway-type").value = catway.catwayType;
+    document.getElementById("edit-catway-state").value = catway.catwayState;
 
-  document.getElementById("edit-catway-number").value = number;
-  document.getElementById("edit-catway-type").value = type;
-  document.getElementById("edit-catway-state").value = state;
-
-  document.getElementById("edit-catway-form").classList.remove("hidden");
+    document.getElementById("edit-catway-form").classList.remove("hidden");
 }
 
 async function updateCatway() {
-  const catwayNumber = document.getElementById("edit-catway-number").value;
-  const catwayType = document.getElementById("edit-catway-type").value;
-  const catwayState = document.getElementById("edit-catway-state").value;
+    const number = document.getElementById("edit-catway-number").value;
 
-  const res = await fetch(`/catways/${editingCatwayId}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + token
-    },
-    body: JSON.stringify({
-      catwayNumber,
-      catwayType,
-      catwayState
-    })
-  });
+    const updated = {
+        catwayNumber: number,
+        catwayType: document.getElementById("edit-catway-type").value,
+        catwayState: document.getElementById("edit-catway-state").value
+    };
 
-  if (res.ok) {
-    alert("Catway modifié !");
+    await fetch(`/catways/${number}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        body: JSON.stringify(updated)
+    });
+
     loadCatways();
-    document.getElementById("edit-catway-form").classList.add("hidden");
-  } else {
-    const data = await res.json();
-    alert("Erreur : " + data.error);
-  }
 }
 
-async function deleteCatway(id) {
-  if (!confirm("Supprimer ce Catway ?")) return;
-
-  const res = await fetch(`/catways/${id}`, {
-    method: "DELETE",
-    headers: {
-      "Authorization": "Bearer " + token
-    }
-  });
-
-  if (res.ok) {
-    alert("Catway supprimé !");
-    loadCatways();
-  } else {
-    const data = await res.json();
-    alert("Erreur : " + data.error);
-  }
-}
+// RÉSERVATIONS
 
 async function loadReservations() {
-    try {
-        const res = await fetch('/reservations', {
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-            }
-        });
-
-        const data = await res.json();
-        const reservations = data.reservations;
-
-        const container = document.getElementById("reservations-list");
-
-        if (!Array.isArray(reservations) || reservations.length === 0) {
-            container.innerHTML = "<p>Aucune réservation trouvée.</p>";
-            return;
-        }
-
-        container.innerHTML = reservations.map(r => `
-            <div class="reservation-card">
-                <p><strong>Bateau :</strong> ${r.boatName}</p>
-                <p><strong>Client :</strong> ${r.clientName}</p>
-                <p><strong>Arrivée :</strong> ${new Date(r.startDate).toLocaleDateString()}</p>
-                <p><strong>Départ :</strong> ${new Date(r.endDate).toLocaleDateString()}</p>
-                <p><strong>Catway :</strong> ${r.catwayNumber}</p>
-
-                <button onclick="editReservation('${r._id}')">Modifier</button>
-                <button onclick="deleteReservation('${r._id}')">Supprimer</button>
-            </div>
-        `).join('');
-    } catch (err) {
-        console.error("Erreur lors du chargement des réservations :", err);
-        alert(err);
+    const res = await fetch("/reservations", {
+    headers: {
+        "Authorization": "Bearer " + localStorage.getItem("token")
     }
+});
+    const reservations = await res.json();
+
+    const container = document.getElementById("reservations-list");
+    container.innerHTML = "";
+
+    reservations.forEach(r => {
+        const div = document.createElement("div");
+        div.innerHTML = `
+            <strong>${r.boatName}</strong><br>
+            Client : ${r.clientName}<br>
+            Du ${r.startDate.slice(0, 10)} au ${r.endDate.slice(0, 10)}<br>
+            Catway : ${r.catwayNumber}<br>
+            <button onclick="editReservation('${r._id}')">Modifier</button>
+            <button onclick="deleteReservation('${r._id}')">Supprimer</button>
+            <hr>
+        `;
+        container.appendChild(div);
+    });
+}
+
+async function editReservation(id) {
+    const res = await fetch(`/reservations/${id}`, {
+    headers: {
+        "Authorization": "Bearer " + localStorage.getItem("token")
+    }
+});
+    const r = await res.json();
+
+    document.getElementById("edit-id").value = r._id;
+    document.getElementById("edit-boatName").value = r.boatName;
+    document.getElementById("edit-clientName").value = r.clientName;
+    document.getElementById("edit-startDate").value = r.startDate.slice(0, 10);
+    document.getElementById("edit-endDate").value = r.endDate.slice(0, 10);
+    document.getElementById("edit-catwayNumber").value = r.catwayNumber;
+
+    showSection("edit-reservation");
+}
+
+document.getElementById("edit-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const id = document.getElementById("edit-id").value;
+
+    const updated = {
+        boatName: document.getElementById("edit-boatName").value,
+        clientName: document.getElementById("edit-clientName").value,
+        startDate: document.getElementById("edit-startDate").value,
+        endDate: document.getElementById("edit-endDate").value,
+        catwayNumber: document.getElementById("edit-catwayNumber").value
+    };
+
+    await fetch(`/reservations/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        body: JSON.stringify(updated)
+    });
+
+    showSection("reservations");
+});
+
+async function deleteReservation(id) {
+    await fetch(`/reservations/${id}`, {
+        method: "DELETE",
+        headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+    });
+
+    loadReservations();
 }

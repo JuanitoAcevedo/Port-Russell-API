@@ -1,30 +1,11 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const mongoose = require("mongoose");
 
-const ReservationSchema = new Schema({
-  boatName: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  ownerName: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  arrivalDate: {
-    type: Date,
-    required: true
-  },
-  departureDate: {
-    type: Date,
-    required: true
-  },
-  catway: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Catway',
-    required: true
-  }
-}, { timestamps: true });
+const reservationSchema = new mongoose.Schema({
+  boatName: String,
+  clientName: String,
+  startDate: Date,
+  endDate: Date,
+  catwayNumber: Number
+});
 
-module.exports = mongoose.model('Reservation', ReservationSchema);
+module.exports = mongoose.model("Reservation", reservationSchema);

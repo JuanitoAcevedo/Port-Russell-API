@@ -1,68 +1,38 @@
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const cors = require('cors');
-const catwaysRouter = require('./routes/catways');
-const reservationsRouter = require("./routes/reservations");
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
 
-
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
-const mongodb = require('./db/mongo');
-
-mongodb.initClientDbConnection();
+const catwaysRoutes = require("./routes/catways");
+const reservationsRoutes = require("./routes/reservations");
+const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/users");
 
 const app = express();
 
-// Log des requêtes
-app.use((req, res, next) => {
-  console.log(">>> REQUÊTE REÇUE :", req.method, req.url);
-  next();
-});
-
-// Middlewares de base
-app.use(cors({ origin: '*', exposedHeaders: ['Authorization'] }));
-app.use(express.json({ strict: false }));
-app.use((req, res, next) => {
-  console.log(">>> BODY REÇU :", req.body);
-  next();
-});
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+mongoose.connect("mongodb://127.0.0.1:27017/port_russell")
+  .then(() => console.log("MongoDB connecté"))
+  .catch(err => console.error("Erreur MongoDB :", err));
+  
+app.use(express.json());
+app.use(cors());
 
 app.use(express.static("public"));
 
-// Supprimer le slash final
-app.use((req, res, next) => {
-  if (req.url.endsWith('/') && req.url.length > 1) {
-    req.url = req.url.slice(0, -1);
-  }
-  next();
+app.use("/catways", catwaysRoutes);
+app.use("/reservations", reservationsRoutes);
+
+// Auth
+app.use("/", authRoutes);        
+
+// Users
+app.use("/users", userRoutes); 
+
+app.get("/", (req, res) => {
+  res.send("Bienvenue sur l’API du Port Russell");
 });
 
-// Routes
-app.use('/users', usersRouter);
-app.use('/catways', catwaysRouter);
-app.use("/reservations", reservationsRouter);
-app.use('/', indexRouter);
+const catwayReservationsRoutes = require("./routes/catwayReservations");
 
-// 404
-app.use((req, res, next) => {
-  return res.status(404).json({ error: "not_found" });
-});
-
-// Middleware d’erreur
-app.use((err, req, res, next) => {
-  console.error(">>> ERREUR INTERNE :", err);
-
-  if (!err) {
-    return res.status(500).json({ error: "unknown_error" });
-  }
-
-  if (err instanceof Error) {
-    return res.status(500).json({ error: err.message });
-  }
-
-  return res.status(500).json({ error: String(err) });
-});
+app.use("/catways/:id/reservations", catwayReservationsRoutes);
 
 module.exports = app;

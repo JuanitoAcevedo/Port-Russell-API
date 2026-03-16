@@ -62,7 +62,37 @@
             <h3>Mon Profil</h3>
             <div id="profile-info"></div>
         </section>
+        <section id="edit-reservation" class="section hidden">
+            <h3>Modifier une réservation</h3>
+
+            <form id="edit-form">
+                <input type="hidden" id="edit-id">
+
+                <label>Nom du bateau :</label>
+                <input type="text" id="edit-boatName" required>
+
+                <label>Nom du client :</label>
+            <input type="text" id="edit-clientName" required>
+
+                <label>Date de début :</label>
+                <input type="date" id="edit-startDate" required>
+
+                <label>Date de fin :</label>
+                <input type="date" id="edit-endDate" required>
+
+                <label>Numéro du catway :</label>
+                <input type="number" id="edit-catwayNumber" required>
+
+                <button type="submit">Enregistrer</button>
+            </form>
+        </section>
     </div>
+    <script>
+        if (!localStorage.getItem("token")) {
+            window.location.href = "/login.html";
+        }
+    </script>
+
     <script src="/dashboard.js"></script>
 </body>
 </html>
