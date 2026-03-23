@@ -6,10 +6,11 @@
 const app = require('./app');
 
 /**
- * Lance le serveur sur le port 3000
- * @function
- * @returns {void}
+ * Render impose un port via process.env.PORT.
+ * En local, on utilise 3000 par défaut.
  */
-app.listen(3000, () => {
-  console.log('API Port Russell en écoute sur http://localhost:3000');
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+  console.log(`API Port Russell en écoute sur le port ${port}`);
 });
