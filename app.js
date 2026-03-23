@@ -19,7 +19,7 @@ const app = express();
 /**
  * Connexion à MongoDB
  */
-mongoose.connect("mongodb://127.0.0.1:27017/port_russell")
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connecté"))
   .catch(err => console.error("Erreur MongoDB :", err));
 
