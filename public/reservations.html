@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Réservations – Port Russell</title>
+    <link rel="stylesheet" href="/dashboard.css">
+</head>
+
+<body>
+
+    <!-- ============================
+         NAVIGATION
+         ============================ -->
+    <nav class="navbar">
+        <h2>Port Russell – Réservations</h2>
+
+        <ul>
+            <li><a href="/dashboard.html">Dashboard</a></li>
+            <li><a href="/catways.html">Catways</a></li>
+            <li><a href="/reservations.html">Réservations</a></li>
+            <li><a href="/users.html">Utilisateurs</a></li>
+            <li><a href="/documentation.html">Documentation API</a></li>
+            <li><a href="#" onclick="logout()">Déconnexion</a></li>
+        </ul>
+    </nav>
+
+
+    <!-- ============================
+         CONTENU PRINCIPAL
+         ============================ -->
+    <div id="content">
+
+        <h3>Liste des Réservations</h3>
+
+        <!-- Bouton pour afficher le formulaire d'ajout -->
+        <button onclick="showAddReservationForm()">➕ Ajouter une réservation</button>
+
+
+        <!-- Formulaire d'ajout -->
+        <div id="add-reservation-form" class="hidden">
+            <h4>Nouvelle réservation</h4>
+
+            <label>Nom du bateau :</label>
+            <input id="reservation-boatName" type="text" required>
+
+            <label>Nom du client :</label>
+            <input id="reservation-clientName" type="text" required>
+
+            <label>Date de début :</label>
+            <input id="reservation-startDate" type="date" required>
+
+            <label>Date de fin :</label>
+            <input id="reservation-endDate" type="date" required>
+
+            <label>Numéro du catway :</label>
+            <input id="reservation-catwayNumber" type="number" required>
+
+            <button onclick="createReservation()">Créer</button>
+        </div>
+
+
+        <!-- Formulaire d'édition -->
+        <div id="edit-reservation-form" class="hidden">
+            <h4>Modifier une réservation</h4>
+
+            <input type="hidden" id="edit-reservation-id">
+
+            <label>Nom du bateau :</label>
+            <input id="edit-reservation-boatName" type="text" required>
+
+            <label>Nom du client :</label>
+            <input id="edit-reservation-clientName" type="text" required>
+
+            <label>Date de début :</label>
+            <input id="edit-reservation-startDate" type="date" required>
+
+            <label>Date de fin :</label>
+            <input id="edit-reservation-endDate" type="date" required>
+
+            <label>Numéro du catway :</label>
+            <input id="edit-reservation-catwayNumber" type="number" required>
+
+            <button onclick="updateReservation()">Enregistrer</button>
+        </div>
+
+
+        <!-- Liste dynamique -->
+        <div id="reservations-list"></div>
+
+    </div>
+
+
+    <!-- ============================
+         REDIRECTION SI NON CONNECTÉ
+         ============================ -->
+    <script>
+        if (!localStorage.getItem("token")) {
+            window.location.href = "/login.html";
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "/login.html";
+        }
+    </script>
+
+    <!-- Script CRUD Réservations -->
+    <script src="/dashboard.js"></script>
+
+    <!-- Chargement automatique -->
+    <script>
+        loadReservations();
+    </script>
+
+</body>
+</html>

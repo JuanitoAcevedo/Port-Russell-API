@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion – Port Russell</title>
+
+    <!-- Feuille de style dédiée à la page de connexion -->
+    <link rel="stylesheet" href="/login.css">
+
+    <!-- Redirection automatique si l'utilisateur est déjà connecté -->
+    <script>
+        if (localStorage.getItem("token")) {
+            window.location.href = "/dashboard.html";
+        }
+    </script>
+</head>
+
+<body>
+
+    <!-- ============================
+         CONTENEUR PRINCIPAL
+         ============================ -->
+    <div class="login-container">
+        <h2>Connexion</h2>
+
+        <!-- Formulaire de connexion -->
+        <form id="login-form">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Mot de passe" required>
+            <button type="submit">Se connecter</button>
+        </form>
+
+        <!-- Message d'erreur affiché en cas d'échec -->
+        <p id="error-message" style="color:red;"></p>
+    </div>
+
+
+    <!-- ============================
+         SCRIPT DE CONNEXION
+         ============================ -->
+    <script>
+        /**
+         * Gestion de la soumission du formulaire de connexion.
+         * Envoie les identifiants à l'API et stocke le token si valide.
+         */
+        document.getElementById("login-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            // Requête vers l'API d'authentification
+            const res = await fetch("/users/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            // Gestion des erreurs
+            if (!res.ok) {
+                document.getElementById("error-message").textContent =
+                    "Email ou mot de passe incorrect";
+                return;
+            }
+
+            const data = await res.json();
+
+            // Stockage du token JWT
+            localStorage.setItem("token", data.token);
+
+            // Redirection vers le dashboard
+            window.location.href = "/dashboard.html";
+        });
+    </script>
+
+</body>
+</html>

@@ -1,63 +1,65 @@
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const cors = require('cors');
-const catwaysRouter = require('./routes/catways');
+/**
+ * Application Express principale du Port Russell.
+ * Configure la connexion MongoDB, les middlewares globaux
+ * et le montage des différentes routes de l'API.
+ */
 
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
-const mongodb = require('./db/mongo');
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
 
-mongodb.initClientDbConnection();
+const catwaysRoutes = require("./routes/catways");
+const reservationsRoutes = require("./routes/reservations");
+const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/users");
+const catwayReservationsRoutes = require("./routes/catwayReservations");
 
 const app = express();
 
-// Log des requêtes
-app.use((req, res, next) => {
-  console.log(">>> REQUÊTE REÇUE :", req.method, req.url);
-  next();
-});
+/**
+ * Connexion à MongoDB
+ */
+mongoose.connect("mongodb://127.0.0.1:27017/port_russell")
+  .then(() => console.log("MongoDB connecté"))
+  .catch(err => console.error("Erreur MongoDB :", err));
 
-// Middlewares de base
-app.use(cors({ origin: '*', exposedHeaders: ['Authorization'] }));
-app.use(express.json({ strict: false }));
-app.use((req, res, next) => {
-  console.log(">>> BODY REÇU :", req.body);
-  next();
-});
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+/**
+ * Middlewares globaux
+ */
+app.use(express.json());
+app.use(cors());
 
-// Supprimer le slash final
-app.use((req, res, next) => {
-  if (req.url.endsWith('/') && req.url.length > 1) {
-    req.url = req.url.slice(0, -1);
-  }
-  next();
-});
+/**
+ * Fichiers statiques (frontend)
+ */
+app.use(express.static("public"));
 
-// Routes
-app.use('/users', usersRouter);
-app.use('/catways', catwaysRouter);
-app.use('/', indexRouter);
+/**
+ * Routes principales de l'API
+ */
+app.use("/catways", catwaysRoutes);
+app.use("/reservations", reservationsRoutes);
 
-// 404
-app.use((req, res, next) => {
-  return res.status(404).json({ error: "not_found" });
-});
+/**
+ * Authentification (login / logout)
+ */
+app.use("/", authRoutes);
 
-// Middleware d’erreur
-app.use((err, req, res, next) => {
-  console.error(">>> ERREUR INTERNE :", err);
+/**
+ * Gestion des utilisateurs
+ */
+app.use("/users", userRoutes);
 
-  if (!err) {
-    return res.status(500).json({ error: "unknown_error" });
-  }
+/**
+ * Sous-routes : réservations d’un catway spécifique
+ */
+app.use("/catways/:id/reservations", catwayReservationsRoutes);
 
-  if (err instanceof Error) {
-    return res.status(500).json({ error: err.message });
-  }
-
-  return res.status(500).json({ error: String(err) });
+/**
+ * Route d'accueil
+ */
+app.get("/", (req, res) => {
+  res.send("Bienvenue sur l’API du Port Russell");
 });
 
 module.exports = app;

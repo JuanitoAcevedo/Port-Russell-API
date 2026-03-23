@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Utilisateurs – Port Russell</title>
+    <link rel="stylesheet" href="/dashboard.css">
+</head>
+
+<body>
+
+    <!-- ============================
+         NAVIGATION
+         ============================ -->
+    <nav class="navbar">
+        <h2>Port Russell – Utilisateurs</h2>
+
+        <ul>
+            <li><a href="/dashboard.html">Dashboard</a></li>
+            <li><a href="/catways.html">Catways</a></li>
+            <li><a href="/reservations.html">Réservations</a></li>
+            <li><a href="/users.html">Utilisateurs</a></li>
+            <li><a href="/documentation.html">Documentation API</a></li>
+            <li><a href="#" onclick="logout()">Déconnexion</a></li>
+        </ul>
+    </nav>
+
+
+    <!-- ============================
+         CONTENU PRINCIPAL
+         ============================ -->
+    <div id="content">
+
+        <h3>Liste des Utilisateurs</h3>
+
+        <!-- Bouton pour afficher le formulaire d'ajout -->
+        <button onclick="showAddUserForm()">➕ Ajouter un utilisateur</button>
+
+
+        <!-- Formulaire d'ajout -->
+        <div id="add-user-form" class="hidden">
+            <h4>Nouvel utilisateur</h4>
+
+            <input id="user-name" type="text" placeholder="Nom" required>
+            <input id="user-email" type="email" placeholder="Email" required>
+            <input id="user-password" type="password" placeholder="Mot de passe" required>
+
+            <button onclick="createUser()">Créer</button>
+        </div>
+
+
+        <!-- Formulaire d'édition -->
+        <div id="edit-user-form" class="hidden">
+            <h4>Modifier un utilisateur</h4>
+
+            <input type="hidden" id="edit-user-id">
+
+            <label>Nom :</label>
+            <input id="edit-user-name" type="text" required>
+
+            <label>Email :</label>
+            <input id="edit-user-email" type="email" required>
+
+            <button onclick="updateUser()">Enregistrer</button>
+        </div>
+
+
+        <!-- Liste dynamique -->
+        <div id="users-list"></div>
+
+    </div>
+
+
+    <!-- ============================
+         REDIRECTION SI NON CONNECTÉ
+         ============================ -->
+    <script>
+        if (!localStorage.getItem("token")) {
+            window.location.href = "/login.html";
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "/login.html";
+        }
+    </script>
+
+    <!-- Script CRUD utilisateurs -->
+    <script src="/users.js"></script>
+
+    <!-- Chargement automatique -->
+    <script>
+        loadUsers();
+    </script>
+
+</body>
+</html>
