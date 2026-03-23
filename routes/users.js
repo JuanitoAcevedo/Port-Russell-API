@@ -4,6 +4,25 @@ const User = require("../models/users");
 const { auth } = require("../middleware/auth");
 
 /**
+ * @route POST /users
+ * @description Crée un nouvel utilisateur
+ * @access Public
+ */
+router.post("/", async (req, res) => {
+  try {
+    const user = new User({
+      email: req.body.email,
+      password: req.body.password
+    });
+
+    await user.save();
+    res.status(201).json(user);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+/**
  * @route POST /users/login
  * @description Authentifie un utilisateur et renvoie un token JWT
  * @access Public
