@@ -41,7 +41,12 @@ function showAddCatwayForm() {
 }
 
 async function loadCatways() {
-    const res = await fetch("/catways");
+    const res = await fetch("/catways", {
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        }
+    });
+
     const catways = await res.json();
 
     const container = document.getElementById("catways-list");
@@ -54,6 +59,7 @@ async function loadCatways() {
             Type : ${c.catwayType}<br>
             État : ${c.catwayState}<br>
             <button onclick="editCatway(${c.catwayNumber})">Modifier</button>
+             <button onclick="deleteCatway(${c.catwayNumber})">Supprimer</button>
             <hr>
         `;
         container.appendChild(div);
@@ -80,7 +86,12 @@ async function createCatway() {
 }
 
 async function editCatway(number) {
-    const res = await fetch(`/catways/${number}`);
+    const res = await fetch(`/catways/${number}`, {
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        }
+    });
+
     const catway = await res.json();
 
     document.getElementById("edit-catway-number").value = catway.catwayNumber;
@@ -111,6 +122,17 @@ async function updateCatway() {
     loadCatways();
 }
 
+async function deleteCatway(number) {
+    await fetch(`/catways/${number}`, {
+        method: "DELETE",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        }
+    });
+
+    loadCatways();
+}
+
 // RÉSERVATIONS
 
 async function loadReservations() {
@@ -129,7 +151,8 @@ async function loadReservations() {
         div.innerHTML = `
             <strong>${r.boatName}</strong><br>
             Client : ${r.clientName}<br>
-            Du ${r.startDate.slice(0, 10)} au ${r.endDate.slice(0, 10)}<br>
+            Du ${new Date(r.startDate).toLocaleDateString("fr-FR")}
+            au ${new Date(r.endDate).toLocaleDateString("fr-FR")}<br>
             Catway : ${r.catwayNumber}<br>
             <button onclick="editReservation('${r._id}')">Modifier</button>
             <button onclick="deleteReservation('${r._id}')">Supprimer</button>

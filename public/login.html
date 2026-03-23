@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion – Port Russell</title>
+    <link rel="stylesheet" href="/login.css">
+
+    <!-- Redirection si déjà connecté -->
+    <script>
+        if (localStorage.getItem("token")) {
+            window.location.href = "/dashboard.html";
+        }
+    </script>
+</head>
+
+<body>
+    <div class="login-container">
+        <h2>Connexion</h2>
+
+        <form id="login-form">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Mot de passe" required>
+            <button type="submit">Se connecter</button>
+        </form>
+
+        <p id="error-message" style="color:red;"></p>
+    </div>
+
+    <script>
+        document.getElementById("login-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            const res = await fetch("/users/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (!res.ok) {
+                document.getElementById("error-message").textContent = "Email ou mot de passe incorrect";
+                return;
+            }
+
+            const data = await res.json();
+
+            // Stocker le token
+            localStorage.setItem("token", data.token);
+
+            // Redirection vers le dashboard
+            window.location.href = "/dashboard.html";
+        });
+    </script>
+</body>
+</html>
