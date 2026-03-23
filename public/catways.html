@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Catways – Port Russell</title>
+    <link rel="stylesheet" href="/dashboard.css">
+</head>
+
+<body>
+
+    <!-- ============================
+         NAVIGATION
+         ============================ -->
+    <nav class="navbar">
+        <h2>Port Russell – Catways</h2>
+
+        <ul>
+            <li><a href="/dashboard.html">Dashboard</a></li>
+            <li><a href="/catways.html">Catways</a></li>
+            <li><a href="/reservations.html">Réservations</a></li>
+            <li><a href="/users.html">Utilisateurs</a></li>
+            <li><a href="/documentation.html">Documentation API</a></li>
+            <li><a href="#" onclick="logout()">Déconnexion</a></li>
+        </ul>
+    </nav>
+
+
+    <!-- ============================
+         CONTENU PRINCIPAL
+         ============================ -->
+    <div id="content">
+
+        <h3>Liste des Catways</h3>
+
+        <!-- Bouton pour afficher le formulaire d'ajout -->
+        <button onclick="showAddCatwayForm()">➕ Ajouter un Catway</button>
+
+
+        <!-- Formulaire d'ajout -->
+        <div id="add-catway-form" class="hidden">
+            <h4>Nouveau Catway</h4>
+
+            <label>Numéro :</label>
+            <input id="catway-number" type="number" required>
+
+            <label>Type :</label>
+            <select id="catway-type">
+                <option value="long">long</option>
+                <option value="short">short</option>
+            </select>
+
+            <button onclick="createCatway()">Créer</button>
+        </div>
+
+
+        <!-- Formulaire d'édition -->
+        <div id="edit-catway-form" class="hidden">
+            <h4>Modifier un Catway</h4>
+
+            <input type="hidden" id="edit-catway-id">
+
+            <label>Numéro :</label>
+            <input id="edit-catway-number" type="number" required>
+
+            <label>Type :</label>
+            <select id="edit-catway-type">
+                <option value="long">long</option>
+                <option value="short">short</option>
+            </select>
+
+            <label>État :</label>
+            <select id="edit-catway-state">
+                <option value="OK">OK</option>
+                <option value="maintenance">maintenance</option>
+                <option value="occupied">occupied</option>
+                <option value="unavailable">unavailable</option>
+                <option value="bon état">bon état</option>
+            </select>
+
+            <button onclick="updateCatway()">Enregistrer</button>
+        </div>
+
+
+        <!-- Liste dynamique -->
+        <div id="catways-list"></div>
+
+    </div>
+
+
+    <!-- ============================
+         REDIRECTION SI NON CONNECTÉ
+         ============================ -->
+    <script>
+        if (!localStorage.getItem("token")) {
+            window.location.href = "/login.html";
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "/login.html";
+        }
+    </script>
+
+    <!-- Script CRUD Catways -->
+    <script src="/dashboard.js"></script>
+
+    <!-- Chargement automatique -->
+    <script>
+        loadCatways();
+    </script>
+
+</body>
+</html>

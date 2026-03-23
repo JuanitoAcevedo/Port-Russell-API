@@ -5,50 +5,63 @@
   <title>Documentation API – Port Russell</title>
   <link rel="stylesheet" href="/docs.css">
 </head>
+
 <body>
 
   <h1>📘 Documentation de l’API – Port Russell</h1>
-  <p>Bienvenue dans la documentation officielle de l’API du port de plaisance Port Russell.</p>
+  <p>Documentation officielle de l’API réellement implémentée dans votre projet.</p>
   <p><a href="/">⬅ Retour à l’accueil</a></p>
 
-  <!-- AUTH -->
+
+  <!-- ============================
+       AUTHENTIFICATION
+       ============================ -->
   <div class="section">
     <h2>🔐 Authentification</h2>
 
-    <h3>POST /users/register</h3>
-    <p>Créer un utilisateur.</p>
-
     <h3>POST /users/login</h3>
-    <p>Connexion, renvoie un token JWT.</p>
+    <p>Connexion utilisateur. Retourne un token.</p>
     <pre>{
   "email": "test@test.com",
   "password": "123456"
 }</pre>
+
+    <h3>POST /users/register</h3>
+    <p>Créer un utilisateur (si route activée dans votre backend).</p>
+
+    <h3>🔑 Header requis pour toutes les routes protégées</h3>
+    <pre>Authorization: Bearer VOTRE_TOKEN</pre>
   </div>
 
-  <!-- USERS -->
-  <div class="section">
-    <h2>👤 Users</h2>
 
-    <h3>GET /users</h3>
-    <p>Liste des utilisateurs (admin).</p>
+  <!-- ============================
+       USERS
+       ============================ -->
+  <div class="section">
+    <h2>👤 Utilisateurs</h2>
 
     <h3>GET /users/me</h3>
-    <p>Retourne le profil du user connecté.</p>
+    <p>Retourne le profil de l’utilisateur connecté.</p>
+
+    <h3>GET /users</h3>
+    <p>Liste tous les utilisateurs (si autorisé).</p>
 
     <h3>DELETE /users/:id</h3>
     <p>Supprime un utilisateur.</p>
   </div>
 
-  <!-- CATWAYS -->
+
+  <!-- ============================
+       CATWAYS
+       ============================ -->
   <div class="section">
     <h2>⚓ Catways</h2>
 
     <h3>GET /catways</h3>
-    <p>Liste des catways.</p>
+    <p>Liste tous les catways.</p>
 
     <h3>GET /catways/:id</h3>
-    <p>Détails d’un catway.</p>
+    <p>Retourne les détails d’un catway.</p>
 
     <h3>POST /catways</h3>
     <p>Créer un catway.</p>
@@ -58,35 +71,23 @@
 
     <h3>DELETE /catways/:id</h3>
     <p>Supprimer un catway.</p>
+
+    <h3>GET /catways/:id/reservations</h3>
+    <p>Liste les réservations associées à un catway.</p>
   </div>
 
-  <!-- RESERVATIONS -->
+
+  <!-- ============================
+       RÉSERVATIONS
+       ============================ -->
   <div class="section">
-    <h2>📅 Reservations</h2>
+    <h2>📅 Réservations</h2>
 
     <h3>GET /reservations</h3>
-    <p>Liste générale (pagination, tri, filtres).</p>
+    <p>Liste toutes les réservations.</p>
 
-    <h3>GET /reservations/my-reservations</h3>
-    <p>Réservations du user connecté.</p>
-
-    <h3>GET /reservations/catway/:catwayId</h3>
-    <p>Réservations d’un catway.</p>
-
-    <h3>GET /reservations/period?from=YYYY-MM-DD&to=YYYY-MM-DD</h3>
-    <p>Réservations dans une période.</p>
-
-    <h3>GET /reservations/active</h3>
-    <p>Réservations actives aujourd’hui.</p>
-
-    <h3>GET /reservations/upcoming</h3>
-    <p>Réservations futures.</p>
-
-    <h3>GET /reservations/past</h3>
-    <p>Réservations passées.</p>
-
-    <h3>GET /reservations/stats</h3>
-    <p>Statistiques globales.</p>
+    <h3>GET /reservations/:id</h3>
+    <p>Retourne une réservation spécifique.</p>
 
     <h3>POST /reservations</h3>
     <p>Créer une réservation.</p>
@@ -96,13 +97,6 @@
 
     <h3>DELETE /reservations/:id</h3>
     <p>Supprimer une réservation.</p>
-  </div>
-
-  <!-- AUTH HEADER -->
-  <div class="section">
-    <h2>🔑 Header d’authentification</h2>
-    <p>Toutes les routes protégées nécessitent :</p>
-    <pre>Authorization: Bearer VOTRE_TOKEN</pre>
   </div>
 
 </body>

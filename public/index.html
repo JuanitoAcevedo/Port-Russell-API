@@ -3,20 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <title>Port de Plaisance Russell – Connexion</title>
+
+  <!-- Feuille de style principale -->
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
+  <!-- ============================
+       CONTENEUR PRINCIPAL
+       ============================ -->
   <div class="container">
+
     <h1>Port de Plaisance de Russell</h1>
+
     <p class="subtitle">
       Application interne de gestion des catways et des réservations.
     </p>
 
     <h2>Connexion</h2>
 
+    <!-- Formulaire de connexion -->
     <form onsubmit="login(event)">
+
       <label>Email :</label>
       <input type="email" id="email" required>
 
@@ -26,18 +35,29 @@
       <button type="submit">Se connecter</button>
     </form>
 
+    <!-- Lien vers la documentation -->
     <p class="doc-link">
       <a href="/documentation.html">📄 Consulter la documentation de l’API</a>
     </p>
+
   </div>
 
+
+  <!-- ============================
+       SCRIPT DE CONNEXION
+       ============================ -->
   <script>
+    /**
+     * Fonction de connexion utilisateur.
+     * Envoie les identifiants à l'API et redirige vers le dashboard si succès.
+     */
     async function login(e) {
       e.preventDefault();
 
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
+      // Requête vers l'API d'authentification
       const res = await fetch("/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -46,6 +66,7 @@
 
       const data = await res.json();
 
+      // Si le token est présent → connexion réussie
       if (data.token) {
         localStorage.setItem("token", data.token);
         window.location.href = "/dashboard.html";

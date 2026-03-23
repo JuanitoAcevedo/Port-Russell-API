@@ -4,7 +4,13 @@ const Reservation = require("../models/reservations");
 const Catway = require("../models/catways");
 const { auth } = require("../middleware/auth");
 
-// GET all reservations for a catway
+/**
+ * @route GET /catways/:id/reservations
+ * @description Récupère toutes les réservations associées à un catway
+ * @access Private (token requis)
+ * @param {Number} req.params.id - Numéro du catway
+ * @returns {Array<Object>} Liste des réservations du catway
+ */
 router.get("/", auth, async (req, res) => {
   try {
     const catwayNumber = req.params.id;
@@ -16,7 +22,13 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
-// GET one reservation for a catway
+/**
+ * @route GET /catways/:id/reservations/:idReservation
+ * @description Récupère une réservation spécifique d’un catway
+ * @access Private (token requis)
+ * @param {String} req.params.idReservation - ID de la réservation
+ * @returns {Object} Réservation correspondante
+ */
 router.get("/:idReservation", auth, async (req, res) => {
   try {
     const reservation = await Reservation.findById(req.params.idReservation);
@@ -28,12 +40,21 @@ router.get("/:idReservation", auth, async (req, res) => {
   }
 });
 
-// CREATE reservation for a catway
+/**
+ * @route POST /catways/:id/reservations
+ * @description Crée une réservation pour un catway donné
+ * @access Private (token requis)
+ * @param {Number} req.params.id - Numéro du catway
+ * @body {String} boatName - Nom du bateau
+ * @body {String} clientName - Nom du client
+ * @body {Date} startDate - Date de début
+ * @body {Date} endDate - Date de fin
+ * @returns {Object} Réservation créée
+ */
 router.post("/", auth, async (req, res) => {
   try {
     const catwayNumber = req.params.id;
 
-    // Vérifier que le catway existe
     const catway = await Catway.findOne({ catwayNumber });
     if (!catway) return res.status(404).json({ error: "Catway not found" });
 
@@ -49,7 +70,13 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
-// UPDATE reservation
+/**
+ * @route PUT /catways/:id/reservations/:idReservation
+ * @description Met à jour une réservation d’un catway
+ * @access Private (token requis)
+ * @param {String} req.params.idReservation - ID de la réservation
+ * @returns {Object} Réservation mise à jour
+ */
 router.put("/:idReservation", auth, async (req, res) => {
   try {
     const updated = await Reservation.findByIdAndUpdate(
@@ -66,7 +93,13 @@ router.put("/:idReservation", auth, async (req, res) => {
   }
 });
 
-// DELETE reservation
+/**
+ * @route DELETE /catways/:id/reservations/:idReservation
+ * @description Supprime une réservation d’un catway
+ * @access Private (token requis)
+ * @param {String} req.params.idReservation - ID de la réservation à supprimer
+ * @returns {Object} Message de confirmation
+ */
 router.delete("/:idReservation", auth, async (req, res) => {
   try {
     const deleted = await Reservation.findByIdAndDelete(req.params.idReservation);

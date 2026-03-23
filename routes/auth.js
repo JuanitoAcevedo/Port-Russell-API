@@ -6,7 +6,14 @@ const { tokens } = require("../middleware/auth");
 
 const router = express.Router();
 
-// LOGIN
+/**
+ * @route POST /auth/login
+ * @description Authentifie un utilisateur via email/mot de passe et génère un token en mémoire
+ * @access Public
+ * @body {String} email - Email de l'utilisateur
+ * @body {String} password - Mot de passe de l'utilisateur
+ * @returns {Object} Token généré
+ */
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -22,7 +29,13 @@ router.post("/login", async (req, res) => {
   res.json({ token });
 });
 
-// LOGOUT
+/**
+ * @route GET /auth/logout
+ * @description Déconnecte l'utilisateur en supprimant son token du stockage en mémoire
+ * @access Private (token requis)
+ * @header {String} Authorization - Token au format Bearer
+ * @returns {Object} Message de confirmation
+ */
 router.get("/logout", (req, res) => {
   const token = req.headers.authorization?.replace("Bearer ", "");
   if (!token) return res.status(400).json({ error: "Token manquant" });

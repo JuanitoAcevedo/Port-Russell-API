@@ -1,6 +1,7 @@
-
-// Gestion des sections
-
+/**
+ * Affiche une section du tableau de bord et charge les données associées.
+ * @param {String} sectionId - ID de la section à afficher
+ */
 function showSection(sectionId) {
     document.querySelectorAll(".section").forEach(sec => sec.classList.add("hidden"));
     document.getElementById(sectionId).classList.remove("hidden");
@@ -10,17 +11,23 @@ function showSection(sectionId) {
     if (sectionId === "profile") loadProfile();
 }
 
-
-// Déconnexion
-
+/**
+ * Déconnecte l'utilisateur en supprimant le token local
+ * puis redirige vers la page de login.
+ */
 function logout() {
     localStorage.removeItem("token");
     window.location.href = "/login.html";
 }
 
+/* ============================
+   PROFIL UTILISATEUR
+   ============================ */
 
-// PROFIL
-
+/**
+ * Charge les informations du profil utilisateur connecté.
+ * Requête : GET /users/me
+ */
 async function loadProfile() {
     const res = await fetch("/users/me", {
         headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
@@ -28,18 +35,26 @@ async function loadProfile() {
     const user = await res.json();
 
     document.getElementById("profile-info").innerHTML = `
-        <p><strong>Nom :</strong> ${user.name}</p>
+        <p><strong>Nom :</strong> ${user.name || user.username}</p>
         <p><strong>Email :</strong> ${user.email}</p>
     `;
 }
 
+/* ============================
+   CATWAYS
+   ============================ */
 
-// CATWAYS
-
+/**
+ * Affiche ou masque le formulaire d'ajout de catway.
+ */
 function showAddCatwayForm() {
     document.getElementById("add-catway-form").classList.toggle("hidden");
 }
 
+/**
+ * Charge la liste des catways.
+ * Requête : GET /catways
+ */
 async function loadCatways() {
     const res = await fetch("/catways", {
         headers: {
@@ -48,7 +63,6 @@ async function loadCatways() {
     });
 
     const catways = await res.json();
-
     const container = document.getElementById("catways-list");
     container.innerHTML = "";
 
@@ -59,13 +73,17 @@ async function loadCatways() {
             Type : ${c.catwayType}<br>
             État : ${c.catwayState}<br>
             <button onclick="editCatway(${c.catwayNumber})">Modifier</button>
-             <button onclick="deleteCatway(${c.catwayNumber})">Supprimer</button>
+            <button onclick="deleteCatway(${c.catwayNumber})">Supprimer</button>
             <hr>
         `;
         container.appendChild(div);
     });
 }
 
+/**
+ * Crée un nouveau catway.
+ * Requête : POST /catways
+ */
 async function createCatway() {
     const newCatway = {
         catwayNumber: document.getElementById("catway-number").value,
@@ -85,6 +103,11 @@ async function createCatway() {
     loadCatways();
 }
 
+/**
+ * Charge un catway pour édition.
+ * Requête : GET /catways/:number
+ * @param {Number} number - Numéro du catway
+ */
 async function editCatway(number) {
     const res = await fetch(`/catways/${number}`, {
         headers: {
@@ -101,6 +124,10 @@ async function editCatway(number) {
     document.getElementById("edit-catway-form").classList.remove("hidden");
 }
 
+/**
+ * Met à jour un catway.
+ * Requête : PUT /catways/:number
+ */
 async function updateCatway() {
     const number = document.getElementById("edit-catway-number").value;
 
@@ -122,6 +149,11 @@ async function updateCatway() {
     loadCatways();
 }
 
+/**
+ * Supprime un catway.
+ * Requête : DELETE /catways/:number
+ * @param {Number} number - Numéro du catway
+ */
 async function deleteCatway(number) {
     await fetch(`/catways/${number}`, {
         method: "DELETE",
@@ -133,16 +165,22 @@ async function deleteCatway(number) {
     loadCatways();
 }
 
-// RÉSERVATIONS
+/* ============================
+   RÉSERVATIONS
+   ============================ */
 
+/**
+ * Charge toutes les réservations.
+ * Requête : GET /reservations
+ */
 async function loadReservations() {
     const res = await fetch("/reservations", {
-    headers: {
-        "Authorization": "Bearer " + localStorage.getItem("token")
-    }
-});
-    const reservations = await res.json();
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        }
+    });
 
+    const reservations = await res.json();
     const container = document.getElementById("reservations-list");
     container.innerHTML = "";
 
@@ -162,12 +200,18 @@ async function loadReservations() {
     });
 }
 
+/**
+ * Charge une réservation pour édition.
+ * Requête : GET /reservations/:id
+ * @param {String} id - ID de la réservation
+ */
 async function editReservation(id) {
     const res = await fetch(`/reservations/${id}`, {
-    headers: {
-        "Authorization": "Bearer " + localStorage.getItem("token")
-    }
-});
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        }
+    });
+
     const r = await res.json();
 
     document.getElementById("edit-id").value = r._id;
@@ -180,6 +224,10 @@ async function editReservation(id) {
     showSection("edit-reservation");
 }
 
+/**
+ * Soumission du formulaire d'édition de réservation.
+ * Requête : PUT /reservations/:id
+ */
 document.getElementById("edit-form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -205,6 +253,11 @@ document.getElementById("edit-form").addEventListener("submit", async (e) => {
     showSection("reservations");
 });
 
+/**
+ * Supprime une réservation.
+ * Requête : DELETE /reservations/:id
+ * @param {String} id - ID de la réservation
+ */
 async function deleteReservation(id) {
     await fetch(`/reservations/${id}`, {
         method: "DELETE",
@@ -212,4 +265,70 @@ async function deleteReservation(id) {
     });
 
     loadReservations();
+}
+/**
+ * Charge et affiche les réservations en cours aujourd’hui.
+ * Une réservation est considérée active si :
+ *  - startDate <= aujourd’hui
+ *  - endDate >= aujourd’hui
+ * Requête : GET /reservations
+ */
+function loadActiveReservations() {
+    fetch("/reservations", {
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        }
+    })
+    .then(res => res.json())
+    .then(reservations => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const active = reservations.filter(r => {
+            const start = new Date(r.startDate);
+            const end = new Date(r.endDate);
+
+            start.setHours(0, 0, 0, 0);
+            end.setHours(0, 0, 0, 0);
+
+            return start <= today && end >= today;
+        });
+
+        const container = document.getElementById("active-reservations-list");
+        container.innerHTML = "";
+
+        if (active.length === 0) {
+            container.innerHTML = "<p>Aucune réservation en cours aujourd’hui.</p>";
+            return;
+        }
+
+        active.forEach(r => {
+            const div = document.createElement("div");
+            div.classList.add("reservation-item");
+
+            div.innerHTML = `
+                <strong>${r.boatName}</strong> – ${r.clientName}<br>
+                Du ${new Date(r.startDate).toLocaleDateString("fr-FR")}
+                au ${new Date(r.endDate).toLocaleDateString("fr-FR")}<br>
+                Catway : ${r.catwayNumber}
+                <hr>
+            `;
+
+            container.appendChild(div);
+        });
+    });
+}
+
+/**
+ * Affiche la date du jour dans le tableau de bord,
+ * au format français (ex : "Lundi 23 mars 2026").
+ */
+function displayTodayDate() {
+    const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+    const today = new Date().toLocaleDateString("fr-FR", options);
+
+    const dateElement = document.getElementById("today-date");
+    if (dateElement) {
+        dateElement.textContent = "📅 " + today.charAt(0).toUpperCase() + today.slice(1);
+    }
 }

@@ -5,31 +5,54 @@
   <title>Dashboard – Port Russell</title>
   <link rel="stylesheet" href="/dashboard.css">
 </head>
+
 <body>
+
+    <!-- ============================
+         BARRE DE NAVIGATION
+         ============================ -->
     <nav class="navbar">
         <h2>Port Russell – Dashboard</h2>
+
         <ul>
+            <!-- Navigation entre les sections -->
             <li><a href="#" onclick="showSection('catways')">Catways</a></li>
             <li><a href="#" onclick="showSection('reservations')">Réservations</a></li>
             <li><a href="#" onclick="showSection('profile')">Profil</a></li>
             <li><a href="#" onclick="logout()">Déconnexion</a></li>
         </ul>
     </nav>
+
+
+    <!-- ============================
+         CONTENU PRINCIPAL
+         ============================ -->
     <div id="content">
-       <section id="catways" class="section hidden">
+
+        <!-- ============================
+             SECTION CATWAYS
+             ============================ -->
+        <section id="catways" class="section hidden">
             <h3>Liste des Catways</h3>
 
+            <!-- Bouton pour afficher le formulaire d'ajout -->
             <button onclick="showAddCatwayForm()">➕ Ajouter un Catway</button>
 
+            <!-- Formulaire d'ajout -->
             <div id="add-catway-form" class="hidden">
                 <h4>Nouveau Catway</h4>
+
                 <input id="catway-number" type="number" placeholder="Numéro">
+
                 <select id="catway-type">
                     <option value="long">long</option>
                     <option value="short">short</option>
                 </select>
+
                 <button onclick="createCatway()">Créer</button>
             </div>
+
+            <!-- Formulaire d'édition -->
             <div id="edit-catway-form" class="hidden">
                 <h4>Modifier Catway</h4>
 
@@ -50,29 +73,54 @@
 
                 <button onclick="updateCatway()">Enregistrer</button>
             </div>
+
+            <!-- Liste dynamique des catways -->
             <div id="catways-list"></div>
         </section>
 
+
+        <!-- ============================
+             SECTION RÉSERVATIONS
+             ============================ -->
         <section id="reservations" class="section hidden">
             <h3>Liste des Réservations</h3>
             <div id="reservations-list"></div>
         </section>
 
+
+        <!-- ============================
+             SECTION PROFIL
+             ============================ -->
         <section id="profile" class="section hidden">
             <h3>Mon Profil</h3>
             <div id="profile-info"></div>
+            <p id="today-date"></p>
         </section>
+
+        <!-- ============================
+             RESERVATION EN COURS AUJOURD'HUI
+             ============================ -->
+        <section id="active-reservations" class="section">
+            <h3>Réservations en cours aujourd’hui</h3>
+            <div id="active-reservations-list"></div>
+        </section>
+
+        <!-- ============================
+             SECTION ÉDITION RÉSERVATION
+             ============================ -->
         <section id="edit-reservation" class="section hidden">
             <h3>Modifier une réservation</h3>
 
             <form id="edit-form">
+
+                <!-- ID caché -->
                 <input type="hidden" id="edit-id">
 
                 <label>Nom du bateau :</label>
                 <input type="text" id="edit-boatName" required>
 
                 <label>Nom du client :</label>
-            <input type="text" id="edit-clientName" required>
+                <input type="text" id="edit-clientName" required>
 
                 <label>Date de début :</label>
                 <input type="date" id="edit-startDate" required>
@@ -86,13 +134,26 @@
                 <button type="submit">Enregistrer</button>
             </form>
         </section>
+
     </div>
+
+
+    <!-- ============================
+         REDIRECTION SI NON CONNECTÉ
+         ============================ -->
     <script>
         if (!localStorage.getItem("token")) {
             window.location.href = "/login.html";
         }
     </script>
 
+    <!-- Script principal du dashboard -->
     <script src="/dashboard.js"></script>
+
+    <!-- Script chargement de la date et réservations actives -->
+     <script>
+        displayTodayDate();
+        loadActiveReservations();
+     </script>
 </body>
 </html>
